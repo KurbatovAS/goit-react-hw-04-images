@@ -1,0 +1,34 @@
+.ImagePendingViewBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ImagePendingViewSpinnerIcon {    
+    margin-right: 10px;
+    animation: icon-spin 2s infinite linear;
+    fill: #3f51b5;
+}
+
+.ImagePendingViewText {  
+    color: #3f51b5;  
+    font-size: 20px;
+}
+
+@-webkit-keyframes icon-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
+}
+
+@keyframes icon-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
+}
