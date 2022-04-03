@@ -18,7 +18,7 @@ function Searchbar ({onSubmit}) {
       return toast.error('Enter your request, please');
     }
 
-    onSubmit(inputValue);
+    onSubmit(inputValue, 1);
     setInputValue('');
   };
 

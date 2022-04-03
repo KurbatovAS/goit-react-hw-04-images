@@ -8,9 +8,8 @@ import ImageErrorView from '../ImageErrorView';
 import ImageIdleView from '../ImageIdleView';
 import ImageResolvedView from '../ImageResolvedView';
 
-function ImageGallery ({searchQuery}) {
-  const [fetchPage, setFetchPage] = useState(1);
-  const [pictures, setPictures] = useState([]);
+function ImageGallery (props) {        
+  const {searchQuery, page, setPage, pictures, setPictures} = props;
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('idle');
@@ -19,45 +18,44 @@ function ImageGallery ({searchQuery}) {
   const [tags, setTags] = useState(null);
 
   useEffect(()=>{
-    setStatus('pending');
-    setPictures([]);
-    fetchImages(searchQuery, fetchPage);
-  }, [searchQuery]);
-
-  useEffect(()=>{
-    setLoading(true);
-    fetchImages(searchQuery, fetchPage);
-  }, [fetchPage])
+    fetchImages();
+    
+    function fetchImages() {
+      if (!searchQuery) {
+        return;
+      }
   
-  function fetchImages(searchQuery, fetchPage) {
-    imagesAPI(searchQuery, fetchPage)
-      .then(res => {
-        if (res.hits.length === 0) {
-          setStatus('idle');
-          return toast.error(`Нет картинки с именем ${searchQuery}`);
-        }
+      setLoading(true);
 
-        if (fetchPage === 1) {
-          setPictures(res.hits);
-          setStatus('resolved')
-        }
-        else {      
-          setPictures(prev => [...prev, ...res.hits]);
-          setStatus('resolved')
-        } 
-      })
-      .catch(error => {
-        setError(error);
-        setStatus('rejected')        
-      })
-      .finally(() => {
-        setLoading(false);    
+      imagesAPI(searchQuery, page)
+        .then(res => {
+          if (res.hits.length === 0) {
+            setStatus('idle');
+            return toast.error(`Нет картинки с именем ${searchQuery}`);
+          }
 
-        if (fetchPage > 1) {
-          scrollDown();
-        }
-      });
-  }
+          if (page === 1) {
+            setPictures(res.hits);
+            setStatus('resolved')
+          }
+          else {
+            setPictures(prev => [...prev, ...res.hits]);
+            setStatus('resolved')
+          }
+        })
+        .catch(error => {
+          setError(error);
+          setStatus('rejected')        
+        })
+        .finally(() => {
+          setLoading(false);    
+  
+          if (page > 1) {
+            scrollDown();
+          }
+        });
+    }
+  }, [searchQuery, page, setPictures]);
 
   function scrollDown() {
     window.scrollTo({
@@ -94,7 +92,7 @@ function ImageGallery ({searchQuery}) {
           )}
           <ImageResolvedView
             pictures={pictures}
-            loadMore={() => {setFetchPage(prev => prev + 1)}}
+            loadMore={() => {setPage(prev => prev + 1)}}
             loading={loading}
             openModal={toggleModal}
           />
@@ -105,6 +103,10 @@ function ImageGallery ({searchQuery}) {
 
 ImageGallery.propTypes = {
   searchQuery: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired,
+  pictures: PropTypes.array.isRequired,
+  setPictures: PropTypes.func.isRequired
 };
 
 export default ImageGallery;
