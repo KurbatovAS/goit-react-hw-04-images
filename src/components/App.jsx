@@ -2,8 +2,6 @@ import {useState, useEffect} from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import s from './App.module.css';
 import Searchbar from './Searchbar';
-// import ImageGallery from './ImageGallery'; //???
-import PropTypes from 'prop-types';
 import Modal from './Modal';
 import imagesAPI from './services';
 import ImagePendingView from './ImagePendingView';
