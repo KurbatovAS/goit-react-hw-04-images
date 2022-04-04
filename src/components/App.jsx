@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import s from './App.module.css';
 import Searchbar from './Searchbar';
@@ -9,7 +9,7 @@ import ImageErrorView from './ImageErrorView';
 import ImageIdleView from './ImageIdleView';
 import ImageResolvedView from './ImageResolvedView';
 
-function App () {
+function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [pictures, setPictures] = useState([]);
@@ -21,19 +21,19 @@ function App () {
   const [pictureUrl, setPictureUrl] = useState(null);
   const [tags, setTags] = useState(null);
 
-  function searchHandler (searchQuery, page) {
+  function searchHandler(searchQuery, page) {
     setSearchQuery(searchQuery);
     setPage(page);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchImages();
-    
+
     function fetchImages() {
       if (!searchQuery) {
         return;
       }
-  
+
       setLoading(true);
 
       imagesAPI(searchQuery, page)
@@ -45,20 +45,19 @@ function App () {
 
           if (page === 1) {
             setPictures(res.hits);
-            setStatus('resolved')
-          }
-          else {
+            setStatus('resolved');
+          } else {
             setPictures(prev => [...prev, ...res.hits]);
-            setStatus('resolved')
+            setStatus('resolved');
           }
         })
         .catch(error => {
           setError(error);
-          setStatus('rejected')        
+          setStatus('rejected');
         })
         .finally(() => {
-          setLoading(false);    
-  
+          setLoading(false);
+
           if (page > 1) {
             scrollDown();
           }
@@ -79,54 +78,56 @@ function App () {
     setTags(tags);
   };
 
-    if (status === 'idle') {
-      return (
-        <div className={s.App}>
-          <Searchbar onSubmit={searchHandler} />
-          <ImageIdleView text={'Введите поисковый запрос'} />;
-          <ToastContainer autoClose={3000} />
-        </div>
-      )
-    }
+  if (status === 'idle') {
+    return (
+      <div className={s.App}>
+        <Searchbar onSubmit={searchHandler} />
+        <ImageIdleView text={'Введите поисковый запрос'} />
+        <ToastContainer autoClose={3000} />
+      </div>
+    );
+  }
 
-    if (status === 'pending') {
-      return (
-        <div className={s.App}>
-          <Searchbar onSubmit={searchHandler} />
-          <ImagePendingView message={'Loading...'} />;
-        </div>
-      )
-    }
+  if (status === 'pending') {
+    return (
+      <div className={s.App}>
+        <Searchbar onSubmit={searchHandler} />
+        <ImagePendingView message={'Loading...'} />
+      </div>
+    );
+  }
 
-    if (status === 'rejected') {
-      return (
-        <div className={s.App}>
-          <Searchbar onSubmit={searchHandler} />
-          <ImageErrorView message={error.message} />;
-          <ToastContainer autoClose={3000} />
-        </div>
-      )      
-    }
+  if (status === 'rejected') {
+    return (
+      <div className={s.App}>
+        <Searchbar onSubmit={searchHandler} />
+        <ImageErrorView message={error.message} />
+        <ToastContainer autoClose={3000} />
+      </div>
+    );
+  }
 
-    if (status === 'resolved') {
-      return (
-        <div className={s.App}>
-          <Searchbar onSubmit={searchHandler} />
-          {showModal && (
-            <Modal onClose={toggleModal}>
-              <img src={pictureUrl} alt={tags} />
-            </Modal>
-          )}
-          <ImageResolvedView
-            pictures={pictures}
-            loadMore={() => {setPage(prev => prev + 1)}}
-            loading={loading}
-            openModal={toggleModal}
-          />
-          <ToastContainer autoClose={3000} />
-        </div>
-      );
-    }
+  if (status === 'resolved') {
+    return (
+      <div className={s.App}>
+        <Searchbar onSubmit={searchHandler} />
+        {showModal && (
+          <Modal onClose={toggleModal}>
+            <img src={pictureUrl} alt={tags} />
+          </Modal>
+        )}
+        <ImageResolvedView
+          pictures={pictures}
+          loadMore={() => {
+            setPage(prev => prev + 1);
+          }}
+          loading={loading}
+          openModal={toggleModal}
+        />
+        <ToastContainer autoClose={3000} />
+      </div>
+    );
+  }
 }
 
 export default App;
